@@ -67,7 +67,7 @@ loss.backwards() # Calculate the gradients.
 ### Option 1: Grokfast (has argument alpha, lamb)
 grads = gradfilter_ema(model, grads=grads, alpha=alpha, lamb=lamb)
 ### Option 2: Grokfast-MA (has argument window_size, lamb)
-grads = gradfilter_ma(model, grads=grads, window_size=window_size, lamb=lamb)
+# grads = gradfilter_ma(model, grads=grads, window_size=window_size, lamb=lamb)
 
 optimizer.step() # Call the optimizer.
 # ... logging & other codes.
