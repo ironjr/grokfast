@@ -29,7 +29,7 @@
 One puzzling artifact in machine learning dubbed *grokking* is where delayed generalization is achieved tenfolds of iterations after near perfect overfitting to the training data.
 Focusing on the long delay itself on behalf of machine learning practitioners, our goal is to accelerate generalization of a model under grokking phenomenon.
 By regarding a series of gradients of a parameter over training iterations as a random signal over time, we can spectrally decompose the parameter trajectories under gradient descent into two components: the fast-varying, overfitting-yielding component and the slow-varying, generalization-inducing component.
-This analysis allows us to accelerate the grokking phenomenon more than $\times \, 50$ with only a few lines of code that amplifies the slow-varying components of gradients.
+This analysis allows us to accelerate the grokking phenomenon more than $\times$ 50 with only a few lines of code that amplifies the slow-varying components of gradients.
 The experiments show that our algorithm applies to diverse tasks involving images, languages, and graphs, enabling practical availability of this peculiar artifact of sudden generalization.
 
 ![fig2](./assets/grokfast_ma_main.png) |  ![fig3](./assets/grokfast_ma_loss_main.png)  |
@@ -175,8 +175,8 @@ pip install -r requirements.txt
 
 | Run | Iterations to Reach 95% Val. Acc. | Wall Clock Time to Reach 95% Val. Acc. (s) | VRAM Requirements (MB) | Latency Per Iteration (s) |
 | :-: | :-------------------------------: | :------------------------------------: | :--------------------: | :-----------------------: |
-| Baseline | $39890$ | $5984$ | $290$ | $0.15$ |
-| Grokfast-MA | $790 \, (\times \, 50.49 \downarrow)$ | $292 \, (\times \, 20.49 \downarrow)$ | $458$ | $0.37$ |
+| Baseline | 39890 | 5984 | 290 | 0.15 |
+| Grokfast-MA | 790 ($\times$ 50.49 $\downarrow$) | 292 ($\times$ 20.49 $\downarrow$) | 458 | 0.37 |
 
 ```bash
 # python main.py --label test # Baseline.
@@ -187,8 +187,8 @@ python main.py --label test --filter ma --window_size 100 --lamb 5.0 --weight_de
 
 | Run | Iterations to Reach 95% Val. Acc. | Wall Clock Time to Reach 95% Val. Acc. (s) | VRAM Requirements (MB) | Latency Per Iteration (s) |
 | :-: | :-------------------------------: | :------------------------------------: | :--------------------: | :-----------------------: |
-| Baseline | $39890$ | $5984$ | $290$ | $0.15$ |
-| Grokfast | $910 \, (\times \, 43.84 \downarrow)$ | $137 \, (\times \, 43.79 \downarrow)$ | $294$ | $0.15$ |
+| Baseline | 39890 | 5984 | $290 | 0.15 |
+| Grokfast | 910 ($\times$ 43.84 $\downarrow$) | 137 ($\times$ 43.79 $\downarrow$) | 294 | 0.15 |
 
 ```bash
 # python main.py --label test # Baseline.
@@ -199,8 +199,8 @@ python main.py --label test --filter ema --alpha 0.98 --lamb 2.0 --weight_decay 
 
 | Run | Iterations to Reach 95% Val. Acc. | Wall Clock Time to Reach 95% Val. Acc. (s) | VRAM Requirements (MB) | Latency Per Iteration (ms) |
 | :-: | :-------------------------------: | :------------------------------------: | :--------------------: | :------------------------: |
-| Baseline | $44022$ | $1928$ | $196$ | $43.8$ |
-| Grokfast | $2001 \, (\times \, 22.00 \downarrow)$ | $87.8 \, (\times \, 21.96 \downarrow)$ | $198$ | $43.9$ |
+| Baseline | 44022 | 1928 | 196 | 43.8 |
+| Grokfast | 2001 ($\times$ 22.00 $\downarrow$) | 87.8 ($\times$ 21.96 $\downarrow$) | 198 | 43.9 |
 
 ```bash
 # python main_mnist.py --label test # Baseline.
@@ -211,8 +211,8 @@ python main_mnist.py --label test --alpha 0.8 --lamb 0.1 --weight_decay 2.0
 
 | Run | Best Validation Acc. | Minimum Validation Loss | VRAM Requirements (MB) | Latency Per Iteration (ms) |
 | :-: | :------------------: | :---------------------: | :--------------------: | :------------------------: |
-| Baseline | $0.84$ | $0.517$ | $754$ | $20.4$ |
-| Grokfast | $0.90$ | $0.412$ | $762$ | $21.2$ |
+| Baseline | 0.84 | 0.517 | 754 | 20.4 |
+| Grokfast | 0.90 | 0.412 | 762 | 21.2 |
 
 - Before training, download the IMDb dataset from [Google Drive](https://drive.google.com/file/d/11dNiqE5Y5tigaeyYP6JPV3xxa1MOu1L-/view?usp=sharing).
 
@@ -225,8 +225,8 @@ python main_imdb.py --label test --alpha 0.98 --lamb 2.0 --weight_decay 10.0
 
 | Run | Minimum Validation Loss | VRAM Requirements (MB) | Latency Per Iteration (ms) |
 | :-: | :---------------------: | :--------------------: | :------------------------: |
-| Baseline | $0.00659$ | $216$ | $40.2$ |
-| Grokfast | $0.00348$ | $216$ | $41.4$ |
+| Baseline | 0.00659 | 216 | 40.2 |
+| Grokfast | 0.00348 | 216 | 41.4 |
 
 ```bash
 # python main_qm9.py --label test # Baseline.
