@@ -214,7 +214,7 @@ python main_mnist.py --label test --alpha 0.8 --lamb 0.1 --weight_decay 2.0
 | Baseline | 0.84 | 0.517 | 754 | 20.4 |
 | Grokfast | 0.90 | 0.412 | 762 | 21.2 |
 
-- Before training, download the IMDb dataset from [Google Drive](https://drive.google.com/file/d/11dNiqE5Y5tigaeyYP6JPV3xxa1MOu1L-/view?usp=sharing).
+- Before training, download the IMDb dataset from [Google Drive](https://drive.google.com/file/d/11dNiqE5Y5tigaeyYP6JPV3xxa1MOu1L-/view?usp=sharing) or [Baidu Webdisk](https://pan.baidu.com/s/1kNDXlqPHxuDLtQWbdItwhw) (pw: vdp7).
 
 ```bash
 # python main_imdb.py --label test # Baseline.
