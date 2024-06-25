@@ -275,6 +275,9 @@ Please cite us if you find our project useful!
 }
 ```
 
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=ironjr/grokfast&type=Date)](https://star-history.com/#ironjr/grokfast&Date)
 
 ## Contact
 
