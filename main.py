@@ -33,6 +33,7 @@ class Block(nn.Module):
             (len(x), len(x)), -float("Inf"), device=x.device, dtype=x.dtype
         )
         attn_mask = torch.triu(attn_mask, diagonal=1)
+        attn_mask[torch.isnan(attn_mask)] = 0.0 # fixes all 'nan' on 'mps' device
 
         x = self.ln_1(x)
         a, _ = self.attn(x, x, x, attn_mask=attn_mask, need_weights=False)
