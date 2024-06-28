@@ -67,7 +67,10 @@ def gradfilter_kalman(
 ) -> Dict[str, Dict[str, torch.Tensor]]:
     if grads is None:
         grads = {
-            n: {"x": torch.zeros_like(p.grad.data), "P": torch.ones_like(p.grad.data)}
+            n: {
+                "x": torch.zeros_like(p.grad.data),
+                "P": torch.ones_like(p.grad.data) * measurement_noise,
+            }
             for n, p in m.named_parameters()
             if p.requires_grad and p.grad is not None
         }
@@ -90,6 +93,6 @@ def gradfilter_kalman(
             grads[n]["P"] = P
 
             # Apply the filtered gradient
-            p.grad.data = p.grad.data + x * lamb
+            p.grad.data += x * lamb
 
     return grads
