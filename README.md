@@ -68,6 +68,8 @@ loss.backwards() # Calculate the gradients.
 grads = gradfilter_ema(model, grads=grads, alpha=alpha, lamb=lamb)
 ### Option 2: Grokfast-MA (has argument window_size, lamb)
 # grads = gradfilter_ma(model, grads=grads, window_size=window_size, lamb=lamb)
+### Option 3: Grokfast-Kalman (has arguments process_noise, measurement_noise, lamb)
+# grads = gradfilter_kalman(model, grads=grads, process_noise=process_noise, measurement_noise=measurement_noise, lamb=lamb
 
 optimizer.step() # Call the optimizer.
 # ... logging & other codes.
@@ -154,6 +156,14 @@ def gradfilter_ma(
     - `filter_type: Literal['mean', 'sum'] = 'mean'`: Aggregation method for the running queue.
     - `warmup: bool = True`: If true, filter is not applied until the queue is filled.
     - `trigger: bool = False`:  For ablation study only. If true, the filter is simply not applied.
+
+3. Grokfast-Kalman (`gradfilter_kalman`)
+
+    - `m: nn.Module`: Model that contains every trainable parameters.
+    - `grads: Optional[Dict[str, Dict[str, torch.Tensor]]] = None`: Running memory (Kalman filter state). Initialize by setting it to `None`. Feed the output of the method recursively after on.
+    - `process_noise: float = 1e-4`: Process noise parameter for the Kalman filter.
+    - `measurement_noise: float = 1e-2`: Measurement noise parameter for the Kalman filter.
+    - `lamb: float = 2.0`: Amplifying factor hyperparameter of the filter.
 
 ---
 
@@ -242,9 +252,9 @@ python main_qm9.py --label test --alpha 0.9 --lamb 1.0 --weight_decay 0.01
 These recommendations are based on my experiences during the experiments shown in the main manuscript. This may not work perfectly to every other problems, and maybe more intelligent techniques can do better jobs than this procedure. So, please take these as one possible starting guidelines for designing your own filters.
 
 
-1. **Cutoff parameters**: The work uses MA/EMA filters to implement the filtering techniques. The cutoff frequency is determined by the _window size_ for the MA filter, and the _momentum parameter_ for the EMA filter.
+1. **Cutoff parameters**: The work uses MA/EMA/Kalman filters to implement the filtering techniques. The cutoff frequency is determined by the _window size_ for the MA filter, the _momentum parameter_ for the EMA filter, and the _process noise_ and _measurement noise_ for the Kalman filter.
     1. **Roughly figure out the amount of acceleration you want to achieve.** For example, in the main manuscript, the cutoff parameters are determined based on the original grokking report, where experiments shows generalization happening X100 slower than overfitting. Therefore, we want *N=100* times faster acceleration.
-    2. **Set the pivotal values for the cutoff parameter search.** For MA, I started to set the window size of "w=N=100" and for EMA, I began with the momentum parameter alpha that satisfies "alpha^{N} = alpha^{100} = 0.1" (which is roughly alpha ~ 0.98).
+    2. **Set the pivotal values for the cutoff parameter search.** For MA, I started to set the window size of "w=N=100" and for EMA, I began with the momentum parameter alpha that satisfies "alpha^{N} = alpha^{100} = 0.1" (which is roughly alpha ~ 0.98). For the Kalman filter, start with process_noise=1e-4 and measurement_noise=1e-2.** These are reasonable starting points, but you may need to adjust them based on your specific task.
     3. **Perform hyperparameter search near the pivot values.** I swept across hyperparameter values near the values set in (1.b).
 3. **Weight decay**: The weight decay is set in the optimizer constructor as usual (e.g., `optimizer = optim.Adam(m.parameters(), weight_decay=wd)`).
     1. **Start from the default weight decay of that task.** For example, the value chosen by the most widely used Github repository of that task.
