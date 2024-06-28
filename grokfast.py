@@ -9,16 +9,20 @@ def gradfilter_ma(
     grads: Optional[Dict[str, deque]] = None,
     window_size: int = 100,
     lamb: float = 5.0,
-    filter_type: Literal['mean', 'sum'] = 'mean',
+    filter_type: Literal["mean", "sum"] = "mean",
     warmup: bool = True,
-    trigger: bool = False, # For ablation study.
+    trigger: bool = False,  # For ablation study.
 ) -> Dict[str, deque]:
     if grads is None:
-        grads = {n: deque(maxlen=window_size) for n, p in m.named_parameters() if p.requires_grad and p.grad is not None}
+        grads = {
+            n: deque(maxlen=window_size)
+            for n, p in m.named_parameters()
+            if p.requires_grad and p.grad is not None
+        }
 
     for n, p in m.named_parameters():
         if p.requires_grad and p.grad is not None:
-            grads[n].append(p.grad.data.detach()) # .cpu())
+            grads[n].append(p.grad.data.detach())  # .cpu())
 
             # Modify the gradients.
             if not warmup or len(grads[n]) == window_size and not trigger:
@@ -40,11 +44,55 @@ def gradfilter_ema(
     lamb: float = 2.0,
 ) -> Dict[str, torch.Tensor]:
     if grads is None:
-        grads = {n: p.grad.data.detach() for n, p in m.named_parameters() if p.requires_grad and p.grad is not None}
+        grads = {
+            n: p.grad.data.detach()
+            for n, p in m.named_parameters()
+            if p.requires_grad and p.grad is not None
+        }
 
     for n, p in m.named_parameters():
         if p.requires_grad and p.grad is not None:
             grads[n] = grads[n] * alpha + p.grad.data.detach() * (1 - alpha)
             p.grad.data = p.grad.data + grads[n] * lamb
+
+    return grads
+
+
+def gradfilter_kalman(
+    m: nn.Module,
+    grads: Optional[Dict[str, Dict[str, torch.Tensor]]] = None,
+    process_noise: float = 1e-4,
+    measurement_noise: float = 1e-2,
+    lamb: float = 2.0,
+) -> Dict[str, Dict[str, torch.Tensor]]:
+    if grads is None:
+        grads = {
+            n: {
+                "x": torch.zeros_like(p.grad.data),
+                "P": torch.ones_like(p.grad.data) * measurement_noise,
+            }
+            for n, p in m.named_parameters()
+            if p.requires_grad and p.grad is not None
+        }
+
+    for n, p in m.named_parameters():
+        if p.requires_grad and p.grad is not None:
+            # Prediction step
+            x_pred = grads[n]["x"]
+            P_pred = grads[n]["P"] + process_noise
+
+            # Update step
+            y = p.grad.data - x_pred
+            S = P_pred + measurement_noise
+            K = P_pred / S
+            x = x_pred + K * y
+            P = (1 - K) * P_pred
+
+            # Store updated state
+            grads[n]["x"] = x
+            grads[n]["P"] = P
+
+            # Apply the filtered gradient
+            p.grad.data += x * lamb
 
     return grads
