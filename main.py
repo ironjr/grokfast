@@ -178,7 +178,7 @@ def main(args):
                         grads = gradfilter_ema(
                             model, grads=grads, alpha=args.alpha, lamb=args.lamb
                         )
-                    elif args.filter == "kalman":
+                    elif args.filter == "kal":
                         grads = gradfilter_kalman(
                             model,
                             grads=grads,
@@ -272,7 +272,7 @@ if __name__ == "__main__":
 
     # Grokfast
     parser.add_argument(
-        "--filter", type=str, choices=["none", "ma", "ema", "fir"], default="none"
+        "--filter", type=str, choices=["none", "ma", "ema", "kal"], default="none"
     )
     parser.add_argument("--alpha", type=float, default=0.99)
     parser.add_argument("--window_size", type=int, default=100)
@@ -296,7 +296,7 @@ if __name__ == "__main__":
         filter_suffix = window_size_str + lamb_str
     elif args.filter == "ema":
         filter_suffix = alpha_str + lamb_str
-    elif args.filter == "kalman":
+    elif args.filter == "kal":
         filter_suffix = (
             f"_p{args.process_noise:.1e}_m{args.measurement_noise:.1e}".replace(".", "")
             + lamb_str
